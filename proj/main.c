@@ -6,5 +6,4 @@
 
 
 char cartas[MAXCARTAS][3];
-int test5;
-int test8;
+int teste_pi;
