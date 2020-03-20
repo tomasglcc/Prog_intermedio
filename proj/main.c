@@ -6,3 +6,4 @@
 
 
 char cartas[MAXCARTAS][3];
+int test;
