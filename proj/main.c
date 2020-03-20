@@ -1,4 +1,8 @@
 #include<stdio.h>
 #include<stlib.h>
 
-#define teste
+
+#define MAXCARTAS 36
+
+
+char cartas[MAXCARTAS][3];
