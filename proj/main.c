@@ -7,3 +7,4 @@
 
 char cartas[MAXCARTAS][3];
 int teste_pi;
+blablablateste
