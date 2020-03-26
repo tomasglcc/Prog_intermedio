@@ -1,0 +1,57 @@
+/* Comparar as cartas*/
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+
+    char baralho[2][1]={"4c","5c"};
+    int lastwinner = 1;
+    int pontuacao_h = 0;
+    int pontuacao_v = 0;
+
+    printf("%c\n",baralho[0][1]); /* estes printfs são só para testar*/
+    printf("%c\n",baralho[1][1]);
+    printf("%s\n",baralho[2][0]);
+    printf("%s\n",baralho[2][1]);
+
+
+
+    if(lastwinner==1)
+    {
+
+        if(baralho[0][1] =! baralho[0][0])
+            pontuacao_v = pontuacao_v + 1;
+        else
+        {
+            if(baralho [1][0] > baralho [1][1])
+                pontuacao_v = pontuacao_v + 1;
+            else
+                pontuacao_h = pontuacao_h + 1;
+        }
+
+
+    }
+
+    if(lastwinner==2)
+    {
+
+         if(baralho[0][1] =! baralho[0][0])
+            pontuacao_h = pontuacao_h + 1;
+        else
+        {
+            if(baralho [1][0] < baralho [1][1])
+                pontuacao_h = pontuacao_h + 1;
+            else
+                pontuacao_v = pontuacao_v + 1;
+
+
+        }
+}
+
+        printf("pontuacao: \njv:%d\njh:%d", pontuacao_v, pontuacao_h);
+}
