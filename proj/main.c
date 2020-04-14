@@ -459,7 +459,7 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
     int tmp[2] = {0, 0};
 
     primeiramao(virtplayer, humplayer, baralho);
-    for (ndj = 15, ndj2 = 30; ndj < 20 && ndj2 < 1000; ndj++, ndj2 = ndj2 + 2) {
+    for (ndj = 0, ndj2 = 0; ndj < 20 && ndj2 < 1000; ndj++, ndj2 = ndj2 + 2) {
         if (ndj < 16) {
             topobaralho(ndj2, baralho, ndj, fp);
             darcarta_humano(baralho, carta, humplayer, ndj2 - 2);
@@ -484,7 +484,9 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
         } else if (ndj == 16) {
             topobaralho(ndj2, baralho, ndj, fp);
             mostracartas3(humplayer, carta, virtplayer, fp);
+/*
             printf("\n%s %s %s ::::: %s %s %s\n", virtplayer[0], virtplayer[1], virtplayer[2], humplayer[0], humplayer[1], humplayer[2]);
+*/
             if (lastwinner == 1) {
                 carta[1] = jogadahumana(humplayer);
                 carta[0] = AIcartas2(virtplayer, humplayer, carta);
@@ -499,8 +501,9 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
             contagem(&benny_pnt, &human_pnt, lastwinner, fp);
             clearlastplay(virtplayer,humplayer,carta,tmp);
         } else if (ndj == 17) {
+/*
             printf("\n%s %s %s ::::: %s %s %s\n", virtplayer[0], virtplayer[1], virtplayer[2], humplayer[0], humplayer[1], humplayer[2]);
-
+*/
             topobaralho(ndj2, baralho, ndj, fp);
             ultcartamaquina(virtplayer, fp);
             ultcartahumano(humplayer, fp);
