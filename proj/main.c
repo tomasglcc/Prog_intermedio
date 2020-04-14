@@ -89,19 +89,6 @@ void mostracartas3(char humplayer[3][3], const int carta[2], char virtplayer[3][
 Imprime no stdout a ultima carta do JH
 */
 
-void ultcartahumano(char humplayer[3][3], const int carta[2], int tmp, FILE *fp) {
-    int i;
-
-    for (i = 0; i < 3; i++) {
-        if (humplayer[i][1] == 0) {
-            return;
-        } else {
-            printf("JH: %s *** ", humplayer[i]);
-            fprintf(fp, "JH: %s *** ", humplayer[i]);
-            return;
-        }
-    }
-}
 
 /*
 Imprime no stdout as 4 cartas presentes no topo do baralho
@@ -238,14 +225,23 @@ int cartamaispequena(char mao[3][3]) {
     }
     return k;
 }
-
-void ultcartamaquina(char virtplayer[3][3], const int carta[2], int tmp2, FILE *fp) {
+void ultcartahumano(char humplayer[3][3], FILE *fp) {
     int i;
 
     for (i = 0; i < 3; i++) {
-        if (virtplayer[i][1] == 0) {
+        if ((strcmp( &humplayer[i][1], "0")) != 0) {
+            printf("JH: %s ", humplayer[i]);
+            fprintf(fp, "JH: %s  ", humplayer[i]);
             return;
-        } else {
+        }
+    }
+}
+
+void ultcartamaquina(char virtplayer[3][3], FILE *fp) {
+    int i;
+
+    for (i = 0; i < 3; i++) {
+        if ((strcmp( &virtplayer [i][1] , "0")) != 0) {
             printf("\nJV: %s *** ", virtplayer[i]);
             fprintf(fp, "\nJV: %s *** ", virtplayer[i]);
             return;
@@ -394,10 +390,9 @@ int AIcartas(char virtplayer[3][3], char humplayer[3][3], const int carta[2]) {
 }
 
 int AIcartas2(char virtplayer[3][3], char humplayer[3][3], const int carta[2]) {
-    int i, u, j = 0;
+    int i, u = 0;
     int indice = carta[1];
     char maovirtual[3][3];
-    char tmp[5];
 
     for (i = 0; i < 3; ++i) {
         if (virtplayer[i][1] == humplayer[indice][1]) {
@@ -406,44 +401,23 @@ int AIcartas2(char virtplayer[3][3], char humplayer[3][3], const int carta[2]) {
             strcpy(maovirtual[i], "00");
         }
     }
-    for (i = 0; i < 3; i++) {
-        for (j = i + 1; j < 3; j++) {
-            if (maovirtual[i] < maovirtual[j]) {
-                strcpy(tmp, maovirtual[i]);
-                strcpy(maovirtual[i], maovirtual[j]);
-                strcpy(maovirtual[j], tmp);
-            }
-        }
-    }
+
     u = cartamaisalta(maovirtual);
     if (virtplayer[u][1] != humplayer[indice][1]) {
-        for (i = 0; i < 3; ++i) {
+        for (i = 0; i < 3; i++) {
             strcpy(maovirtual[i], virtplayer[i]);
         }
-
         u = cartamaispequena(maovirtual);
-        if (maovirtual[u][1] == '0') {
-            u++;
-        }
+        u++;
     }
-    return u;
+return u;
 }
+int clearlastplay(char virtplayer[3][3], char humplayer[3][3], const int carta[2], const int tmp[2]) {
 
-int ultimajogada(char virtplayer[3][3], const int carta[2], int tmp2) {
-    int i, j, u, k;
-    char maovirtual[3][3];
-
-    i = carta[0];
-    j = tmp2;
-
-
-    for (k = 0; k < 3; k++) {
-        strcpy(maovirtual[k], virtplayer[k]);
-    }
-    strcpy(maovirtual[i], "00");
-    strcpy(maovirtual[j], "00");
-    u = cartamaisalta(maovirtual);
-    return u;
+    strcpy(virtplayer[carta[0]], "00");
+    strcpy(humplayer[carta[1]], "00");
+    strcpy(virtplayer[tmp[0]], "00");
+    strcpy(humplayer[tmp[1]], "00");
 }
 
 /*
@@ -480,11 +454,12 @@ ATENCAO o vecotr carta[], guarda o indice da carta jogada tanto pelo JV como pel
 */
 
 void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3][3], FILE *fp) {
-    int ndj = 0, ndj2 = 0, lastwinner = 0, human_pnt = 0, benny_pnt = 0, tmp = 0, tmp2 = 0;
+    int ndj = 0, ndj2 = 0, lastwinner = 0, human_pnt = 0, benny_pnt = 0;
     int carta[2] = {0, 0};
+    int tmp[2] = {0, 0};
 
     primeiramao(virtplayer, humplayer, baralho);
-    for (ndj = 0, ndj2 = 0; ndj < 20 && ndj2 < 1000; ndj++, ndj2 = ndj2 + 2) {
+    for (ndj = 15, ndj2 = 30; ndj < 20 && ndj2 < 1000; ndj++, ndj2 = ndj2 + 2) {
         if (ndj < 16) {
             topobaralho(ndj2, baralho, ndj, fp);
             darcarta_humano(baralho, carta, humplayer, ndj2 - 2);
@@ -492,16 +467,16 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
             mostra_cartas(humplayer, virtplayer, fp);
             if (lastwinner == 1) {
                 carta[1] = jogadahumana(humplayer);
-                tmp = carta[1];
+                tmp[1] = carta[1];
                 carta[0] = AIcartas(virtplayer, humplayer, carta);
-                tmp2 = carta[0];
+                tmp[0] = carta[0];
                 lastwinner = comparador_cmchumano(carta, humplayer, virtplayer);
             } else {
                 carta[0] = cartamaisalta(virtplayer);
-                tmp2 = carta[0];
+                tmp[0] = carta[0];
                 printf("O JV JOGA:  %s\n", virtplayer[carta[0]]);
                 carta[1] = jogadahumana(humplayer);
-                tmp = carta[1];
+                tmp[1] = carta[1];
                 lastwinner = comparador_inicial(carta, humplayer, virtplayer);
             }
             jogada(humplayer, virtplayer, carta, fp);
@@ -509,6 +484,7 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
         } else if (ndj == 16) {
             topobaralho(ndj2, baralho, ndj, fp);
             mostracartas3(humplayer, carta, virtplayer, fp);
+            printf("\n%s %s %s ::::: %s %s %s\n", virtplayer[0], virtplayer[1], virtplayer[2], humplayer[0], humplayer[1], humplayer[2]);
             if (lastwinner == 1) {
                 carta[1] = jogadahumana(humplayer);
                 carta[0] = AIcartas2(virtplayer, humplayer, carta);
@@ -521,12 +497,13 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
             }
             jogada(humplayer, virtplayer, carta, fp);
             contagem(&benny_pnt, &human_pnt, lastwinner, fp);
-            strcpy(virtplayer[carta[0]], "00");
-            strcpy(humplayer[carta[1]], "00");
+            clearlastplay(virtplayer,humplayer,carta,tmp);
         } else if (ndj == 17) {
+            printf("\n%s %s %s ::::: %s %s %s\n", virtplayer[0], virtplayer[1], virtplayer[2], humplayer[0], humplayer[1], humplayer[2]);
+
             topobaralho(ndj2, baralho, ndj, fp);
-            ultcartamaquina(virtplayer, carta, tmp2, fp);
-            ultcartahumano(humplayer, carta, tmp, fp);
+            ultcartamaquina(virtplayer, fp);
+            ultcartahumano(humplayer, fp);
             if (lastwinner == 1) {
                 carta[1] = jogadahumana(humplayer);
                 carta[0] = cartamaisalta(virtplayer);
