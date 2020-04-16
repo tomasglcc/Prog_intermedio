@@ -86,11 +86,6 @@ void mostracartas3(char humplayer[3][3], const int carta[2], char virtplayer[3][
 }
 
 /*
-Imprime no stdout a ultima carta do JH
-*/
-
-
-/*
 Imprime no stdout as 4 cartas presentes no topo do baralho
 */
 
@@ -118,8 +113,8 @@ void topobaralho(int ndj2, char baralho[MAXCARTAS][3], int ndj, FILE *fp) {
         printf("-- --\n");
         fprintf(fp, "-- --\n");
     } else {
-        printf("\nBaralho: ");
-        fprintf(fp, "\nBaralho: ");
+        printf("Baralho: ");
+        fprintf(fp, "Baralho: ");
         printf("-- -- -- --\n");
         fprintf(fp, "-- -- -- --\n");
     }
@@ -170,7 +165,6 @@ troca a posicao de indice loop1 com a posicao de indice j
             strcpy(baralho[l], baralho[loop1]);
             strcpy(baralho[loop1], teste[4]);
         }
-
     }
 }
 
@@ -225,13 +219,14 @@ int cartamaispequena(char mao[3][3]) {
     }
     return k;
 }
+
 void ultcartahumano(char humplayer[3][3], FILE *fp) {
     int i;
 
     for (i = 0; i < 3; i++) {
-        if ((strcmp( &humplayer[i][1], "0")) != 0) {
+        if ((strcmp(&humplayer[i][1], "0")) != 0) {
             printf("JH: %s ", humplayer[i]);
-            fprintf(fp, "JH: %s  ", humplayer[i]);
+            fprintf(fp, "JH: %s  \n", humplayer[i]);
             return;
         }
     }
@@ -241,9 +236,9 @@ void ultcartamaquina(char virtplayer[3][3], FILE *fp) {
     int i;
 
     for (i = 0; i < 3; i++) {
-        if ((strcmp( &virtplayer [i][1] , "0")) != 0) {
-            printf("\nJV: %s *** ", virtplayer[i]);
-            fprintf(fp, "\nJV: %s *** ", virtplayer[i]);
+        if ((strcmp(&virtplayer[i][1], "0")) != 0) {
+            printf("JV: %s *** ", virtplayer[i]);
+            fprintf(fp, "JV: %s *** ", virtplayer[i]);
             return;
         }
     }
@@ -256,7 +251,7 @@ Le o stdin guardando o resultado na variabel tmporaria "a", returnando o indice 
 int jogadahumana(char humplayer[3][3]) {
     int i, u, c;
     char a[5];
-    printf("\nEscolhe a carta Humano!\n");
+    printf("Escolhe a carta Humano!\n");
     scanf("%s", a);
 
     u = -1;
@@ -272,9 +267,8 @@ int jogadahumana(char humplayer[3][3]) {
         }
     }
     if (u == -1) {
-        puts("Essa carta nao e valida fdp");
+        puts("Essa carta nao e valida, o programa vai encerrar");
         exit(0);
-
     } else {
         return u;
     }
@@ -404,15 +398,24 @@ int AIcartas2(char virtplayer[3][3], char humplayer[3][3], const int carta[2]) {
 
     u = cartamaisalta(maovirtual);
     if (virtplayer[u][1] != humplayer[indice][1]) {
-        for (i = 0; i < 3; i++) {
-            strcpy(maovirtual[i], virtplayer[i]);
+        u = cartamaispequena(virtplayer);
+        if (u == 0) {
+            if (virtplayer[1][0] >= virtplayer[2][0])
+                return 2;
         }
-        u = cartamaispequena(maovirtual);
-        u++;
+        if (u == 1) {
+            if (virtplayer[0][0] >= virtplayer[2][0])
+                return 2;
+        }
+        if (u == 2) {
+            if (virtplayer[0][0] >= virtplayer[1][0])
+                return 1;
+        }
     }
-return u;
+    return u;
 }
-int clearlastplay(char virtplayer[3][3], char humplayer[3][3], const int carta[2], const int tmp[2]) {
+
+void clearlastplay(char virtplayer[3][3], char humplayer[3][3], const int carta[2], const int tmp[2]) {
 
     strcpy(virtplayer[carta[0]], "00");
     strcpy(humplayer[carta[1]], "00");
@@ -484,9 +487,6 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
         } else if (ndj == 16) {
             topobaralho(ndj2, baralho, ndj, fp);
             mostracartas3(humplayer, carta, virtplayer, fp);
-/*
-            printf("\n%s %s %s ::::: %s %s %s\n", virtplayer[0], virtplayer[1], virtplayer[2], humplayer[0], humplayer[1], humplayer[2]);
-*/
             if (lastwinner == 1) {
                 carta[1] = jogadahumana(humplayer);
                 carta[0] = AIcartas2(virtplayer, humplayer, carta);
@@ -499,11 +499,8 @@ void opcao4(char baralho[MAXCARTAS][3], char virtplayer[3][3], char humplayer[3]
             }
             jogada(humplayer, virtplayer, carta, fp);
             contagem(&benny_pnt, &human_pnt, lastwinner, fp);
-            clearlastplay(virtplayer,humplayer,carta,tmp);
+            clearlastplay(virtplayer, humplayer, carta, tmp);
         } else if (ndj == 17) {
-/*
-            printf("\n%s %s %s ::::: %s %s %s\n", virtplayer[0], virtplayer[1], virtplayer[2], humplayer[0], humplayer[1], humplayer[2]);
-*/
             topobaralho(ndj2, baralho, ndj, fp);
             ultcartamaquina(virtplayer, fp);
             ultcartahumano(humplayer, fp);
@@ -540,13 +537,24 @@ void mostrar_baralho(char baralho[MAXCARTAS][3]) {
     }
 }
 
+void abreficheiro(FILE *fp) {
+    char ch;
+
+    fp = fopen("bisca.txt", "r");
+    if (fp == NULL) {
+        puts("O FICHEIRO NAO EXISTE");
+        exit(EXIT_FAILURE);
+    }
+    do {
+        ch = fgetc(fp);
+        putchar(ch);
+    } while (ch != EOF);
+    fclose(fp);
+}
+
 int main() {
 
     int opcao;
-    char ch;
-    /*char baralho[MAXCARTAS][3] = {"1C","2C","3C","4C","5C","6C","7C","8C","9C","1E","2E","3E","4E","5E","6E","7E","8E","9E","1O","2O","3O","4O","5O","6O","7O","8O","9O","1P","2P","3P","4P","5P","6P","7P","8P","9P"};*/
-
-
     char baralho[MAXCARTAS][3] = {"1C", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C",
                                   "1E", "2E", "3E", "4E", "5E", "6E", "7E", "8E", "9E",
                                   "1O", "2O", "3O", "4O", "5O", "6O", "7O", "8O", "9O",
@@ -557,7 +565,6 @@ int main() {
     FILE *fp;
 
     printf("\t\t\tBem vindo ao Jogo!\n\n\n\n");
-
     lista();
     printf("Selecione a opcao:\n");
     scanf("%d", &opcao);
@@ -570,30 +577,18 @@ int main() {
             case 1:
                 mostrar_baralho(baralho);
                 lista();
-                fflush(stdout);
                 printf("Selecione a opcao:\n");
                 scanf("%d", &opcao);
                 break;
             case 2:
                 baralhar(baralho);
                 lista();
-                fflush(stdout);
                 printf("Selecione a opcao:\n");
                 scanf("%d", &opcao);
                 break;
             case 3:
-                fp = fopen("bisca.txt", "r");
-                if (fp == NULL) {
-                    puts("O FICHEIRO NAO EXISTE");
-                    exit(EXIT_FAILURE);
-                }
-                do {
-                    ch = fgetc(fp);
-                    putchar(ch);
-                } while (ch != EOF);
-                fclose(fp);
+                abreficheiro(fp);
                 lista();
-                fflush(stdout);
                 printf("Selecione a opcao:\n");
                 scanf("%d", &opcao);
                 break;
@@ -602,15 +597,12 @@ int main() {
                 opcao4(baralho, virtplayer, humplayer, fp);
                 fclose(fp);
                 lista();
-                fflush(stdout);
                 printf("Selecione a opcao:\n");
                 scanf("%d", &opcao);
                 break;
             default:
                 printf("O input nao e valido\n");
         }
-
     } while (opcao != 0);
-
     return 0;
 }
